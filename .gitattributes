@@ -1,0 +1,16 @@
+* text eol=lf
+
+*.png binary
+*.jpg binary
+
+*.jar binary
+*.aar binary
+*.so  binary
+*.xml binary
+*.ttf binary
+*.db  binary
+*.bin binary
+*.tflite binary
+
+*.cmd eol=crlf
+*.bat eol=crlf

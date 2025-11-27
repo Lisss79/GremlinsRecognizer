@@ -1,0 +1,4 @@
+<resources>
+    <string name="initial_info">No info</string>
+    <string name="no_picture">No picture loaded</string>
+</resources>
