@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -19,11 +18,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter.Companion.tint
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -31,20 +30,20 @@ import gremlinsrecognizer.composeapp.generated.resources.Res
 import gremlinsrecognizer.composeapp.generated.resources.ic_close
 import gremlinsrecognizer.composeapp.generated.resources.no_picture
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import ru.lisss79.gremlins_recognizer.manager.ImageClassifierImpl
 import ru.lisss79.gremlins_recognizer.manager.PictureManager
 import ru.lisss79.gremlins_recognizer.viewModel.MainViewModel
-import org.jetbrains.compose.resources.painterResource
-import ru.lisss79.gremlins_recognizer.manager.ImageClassifier
 
 @Composable
 fun MainScreen(
-    pictureManager: PictureManager,
-    imageClassifier: ImageClassifier
+    pictureManager: PictureManager
 ) {
     val viewModel: MainViewModel = viewModel()
     val state by viewModel.state.collectAsState()
     val scope = rememberCoroutineScope()
+    val imageClassifier = remember { ImageClassifierImpl() }
 
     Column(
         modifier = Modifier
@@ -54,12 +53,12 @@ fun MainScreen(
         horizontalAlignment = Alignment.Start
     ) {
         val image = state.image
-        if (image != null) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxSize()
-            ) {
+        Box(
+            modifier = Modifier
+                .weight(2f)
+                .fillMaxSize()
+        ) {
+            if (image != null) {
                 Image(
                     bitmap = image,
                     modifier = Modifier
@@ -79,16 +78,12 @@ fun MainScreen(
                         contentDescription = null
                     )
                 }
+            } else {
+                Text(
+                    text = stringResource(Res.string.no_picture),
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
-        }
-        else {
-            Text(
-                text = stringResource(Res.string.no_picture),
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxSize()
-                    .wrapContentSize(Alignment.Center)
-            )
         }
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),

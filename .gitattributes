@@ -11,6 +11,7 @@
 *.db  binary
 *.bin binary
 *.tflite binary
+*.onnx binary
 
 *.cmd eol=crlf
 *.bat eol=crlf

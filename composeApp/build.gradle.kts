@@ -23,10 +23,8 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
 
-            // TensorFlow
-            implementation("org.tensorflow:tensorflow-lite:2.17.0")
-            implementation("org.tensorflow:tensorflow-lite-gpu:2.17.0")
-            implementation("org.tensorflow:tensorflow-lite-support:0.5.0")
+            // ONNX android
+            implementation(libs.onnxruntime.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -37,6 +35,7 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            compileOnly(libs.onnxruntime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -44,6 +43,9 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+
+            // ONNX
+            implementation(libs.onnxruntime)
         }
     }
 }
