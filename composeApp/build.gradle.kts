@@ -46,6 +46,9 @@ kotlin {
 
             // ONNX
             implementation(libs.onnxruntime)
+
+            // Camera
+            implementation("org.bytedeco:opencv-platform:4.10.0-1.5.11")
         }
     }
 }
@@ -90,8 +93,15 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "ru.lisss79.gremlins_recognizer"
+            packageName = "GremlinsRecognizer"
             packageVersion = "1.0.0"
+
+            windows {
+                // Включить ярлык на рабочем столе
+                shortcut = true
+                // Также можно включить "выбор каталога" при установке
+                dirChooser = true
+            }
         }
     }
 }

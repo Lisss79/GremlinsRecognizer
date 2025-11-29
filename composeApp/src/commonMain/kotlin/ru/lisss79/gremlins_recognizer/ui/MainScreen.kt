@@ -34,7 +34,10 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.lisss79.gremlins_recognizer.manager.ImageClassifierImpl
 import ru.lisss79.gremlins_recognizer.manager.PictureManager
+import ru.lisss79.gremlins_recognizer.state.MainScreen
+import ru.lisss79.gremlins_recognizer.state.Platform
 import ru.lisss79.gremlins_recognizer.viewModel.MainViewModel
+import ru.lisss79.gremlins_recognizer.viewModel.platform
 
 @Composable
 fun MainScreen(
@@ -45,85 +48,109 @@ fun MainScreen(
     val scope = rememberCoroutineScope()
     val imageClassifier = remember { ImageClassifierImpl() }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .systemBarsPadding()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.Start
-    ) {
-        val image = state.image
-        Box(
+    if (state.currentScreen == MainScreen.MAIN_SCREEN) {
+
+        Column(
             modifier = Modifier
-                .weight(2f)
                 .fillMaxSize()
+                .systemBarsPadding()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.Start
         ) {
-            if (image != null) {
-                Image(
-                    bitmap = image,
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .fillMaxSize(),
-                    contentScale = ContentScale.Fit,
-                    contentDescription = null
-                )
-                IconButton(
-                    onClick = { viewModel.clearData() },
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_close),
-                        tint = Color.Red,
+            val image = state.image
+            Box(
+                modifier = Modifier
+                    .weight(2f)
+                    .fillMaxSize()
+            ) {
+                if (image != null) {
+                    Image(
+                        bitmap = image,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .fillMaxSize(),
+                        contentScale = ContentScale.Fit,
                         contentDescription = null
                     )
-                }
-            } else {
-                Text(
-                    text = stringResource(Res.string.no_picture),
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
-        }
-        HorizontalDivider(
-            modifier = Modifier.fillMaxWidth(),
-            thickness = 2.dp
-        )
-        Text(
-            text = state.info,
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxSize()
-                .wrapContentSize(Alignment.Center)
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            ElevatedButton(
-                modifier = Modifier,
-                onClick = { }
-            ) {
-                Text(
-                    text = "Photo"
-                )
-            }
-            ElevatedButton(
-                modifier = Modifier,
-                onClick = {
-                    scope.launch {
-                        val imageBitmap = pictureManager.selectImage()
-                        viewModel.setImage(imageBitmap)
-                        val result = imageClassifier.classifyImage(imageBitmap)
-                        viewModel.setResult(result)
+                    IconButton(
+                        onClick = { viewModel.clearData() },
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_close),
+                            tint = Color.Red,
+                            contentDescription = null
+                        )
                     }
-
+                } else {
+                    Text(
+                        text = stringResource(Res.string.no_picture),
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                 }
+            }
+            HorizontalDivider(
+                modifier = Modifier.fillMaxWidth(),
+                thickness = 2.dp
+            )
+            Text(
+                text = state.info,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center)
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
             ) {
-                Text(
-                    text = "Gallery"
-                )
+                ElevatedButton(
+                    modifier = Modifier,
+                    onClick = {
+                        if (platform == Platform.ANDROID) {
+                            scope.launch {
+                                val imageBitmap = pictureManager.takePicture()
+                                viewModel.setImage(imageBitmap)
+                                val result = imageClassifier.classifyImage(imageBitmap)
+                                viewModel.setResult(result)
+                            }
+                        } else {
+                            viewModel.setScreen(MainScreen.CAMERA_PREVIEW)
+                        }
+                    }
+                ) {
+                    Text(
+                        text = "Photo"
+                    )
+                }
+                ElevatedButton(
+                    modifier = Modifier,
+                    onClick = {
+                        scope.launch {
+                            val imageBitmap = pictureManager.selectImage()
+                            viewModel.setImage(imageBitmap)
+                            val result = imageClassifier.classifyImage(imageBitmap)
+                            viewModel.setResult(result)
+                        }
+
+                    }
+                ) {
+                    Text(
+                        text = "Gallery"
+                    )
+                }
             }
         }
+    } else {
+        CameraControlScreen(
+            modifier = Modifier
+                .fillMaxSize()
+                .systemBarsPadding()
+                .padding(16.dp),
+            pictureManager = pictureManager,
+            imageClassifier = imageClassifier,
+            viewModel = viewModel
+        )
     }
 }

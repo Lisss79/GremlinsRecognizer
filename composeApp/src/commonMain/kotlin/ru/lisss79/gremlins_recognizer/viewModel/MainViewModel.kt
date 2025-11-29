@@ -9,7 +9,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
+import ru.lisss79.gremlins_recognizer.state.MainScreen
 import ru.lisss79.gremlins_recognizer.state.MainState
+import ru.lisss79.gremlins_recognizer.state.Platform
+
+expect val platform: Platform
 
 class MainViewModel: ViewModel() {
 
@@ -35,12 +39,12 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    fun classifyImage() {
-        TODO("Not yet implemented")
-    }
-
     fun setResult(result: List<Pair<String, Float>>) {
         val text = result.firstOrNull()?.first ?: "Can't get info"
         _state.value = _state.value.copy(info = text)
+    }
+
+    fun setScreen(screen: MainScreen) {
+        _state.value = _state.value.copy(currentScreen = screen)
     }
 }
