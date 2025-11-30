@@ -47,4 +47,25 @@ class MainViewModel: ViewModel() {
     fun setScreen(screen: MainScreen) {
         _state.value = _state.value.copy(currentScreen = screen)
     }
+
+    fun setCameras(
+        currentCameraNumber: Int = 0,
+        cameras: List<String>? = null
+    ) {
+        if (cameras != null) _state.value = _state.value.copy(numberOfCameras = cameras.size)
+        if (currentCameraNumber < (state.value.numberOfCameras ?: 0)) {
+            _state.value = _state.value.copy(currentCamera = currentCameraNumber)
+        }
+    }
+
+    fun selectPreviousCamera() {
+        val newNumber = state.value.currentCamera - 1
+        if (newNumber >= 0 && newNumber < (state.value.numberOfCameras ?: 0))
+            setCameras(newNumber)
+    }
+
+    fun selectNextCamera() {
+        val newNumber = state.value.currentCamera + 1
+        if (newNumber < (state.value.numberOfCameras ?: 0)) setCameras(newNumber)
+    }
 }

@@ -30,7 +30,7 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
-            implementation(compose.ui)
+            implementation(compose.materialIconsExtended)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
@@ -48,7 +48,7 @@ kotlin {
             implementation(libs.onnxruntime)
 
             // Camera
-            implementation("org.bytedeco:opencv-platform:4.10.0-1.5.11")
+            implementation(libs.opencv.platform)
         }
     }
 }
@@ -97,10 +97,10 @@ compose.desktop {
             packageVersion = "1.0.0"
 
             windows {
-                // Включить ярлык на рабочем столе
                 shortcut = true
-                // Также можно включить "выбор каталога" при установке
                 dirChooser = true
+                menuGroup = "GremlinsRecognizer"
+                upgradeUuid = "275f1afe-b901-46f1-9462-4c8ed19361b9"
             }
         }
     }

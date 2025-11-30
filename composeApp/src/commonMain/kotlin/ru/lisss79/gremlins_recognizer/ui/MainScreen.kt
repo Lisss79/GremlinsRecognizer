@@ -54,13 +54,13 @@ fun MainScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .systemBarsPadding()
-                .padding(16.dp),
+                .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.Start
         ) {
             val image = state.image
             Box(
                 modifier = Modifier
-                    .weight(2f)
+                    .weight(3f)
                     .fillMaxSize()
             ) {
                 if (image != null) {
@@ -106,7 +106,7 @@ fun MainScreen(
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 ElevatedButton(
-                    modifier = Modifier,
+                    modifier = Modifier.padding(bottom = 8.dp),
                     onClick = {
                         if (platform == Platform.ANDROID) {
                             scope.launch {
@@ -147,7 +147,7 @@ fun MainScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .systemBarsPadding()
-                .padding(16.dp),
+                .padding(horizontal = 16.dp),
             pictureManager = pictureManager,
             imageClassifier = imageClassifier,
             viewModel = viewModel

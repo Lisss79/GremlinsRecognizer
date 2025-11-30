@@ -61,7 +61,7 @@ class AndroidPictureManager(activity: ComponentActivity?) : PictureManager {
         }
     }
 
-    override fun getCamerasList(): List<Camera> {
+    override fun getCamerasList(): List<String> {
         val cameraIds = cameraManager.cameraIdList
         return emptyList()
     }

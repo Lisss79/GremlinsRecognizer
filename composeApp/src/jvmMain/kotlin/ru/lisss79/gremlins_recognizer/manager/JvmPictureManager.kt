@@ -9,12 +9,13 @@ import org.bytedeco.opencv.global.opencv_imgproc.cvtColor
 import org.bytedeco.opencv.opencv_core.Mat
 import org.bytedeco.opencv.opencv_videoio.VideoCapture
 import org.jetbrains.skia.Image
-import org.opencv.videoio.Videoio
 import java.awt.FileDialog
 import java.awt.Frame
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
+import java.nio.charset.StandardCharsets
+import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -22,12 +23,17 @@ class JvmPictureManager : PictureManager {
     private var capture: VideoCapture? = null
     private var previewThread: Thread? = null
     private var running = false
+    private var cameraNames: List<String> = listOf()
 
-    fun startPreview(onFrame: (ImageBitmap?) -> Unit): Boolean {
+    fun startPreview(
+        currentCamera: Int?,
+        onFrame: (ImageBitmap?) -> Unit
+    ): Boolean {
+        if (currentCamera == null) return false
         if (running) return true
         running = true
 
-        capture = VideoCapture(0) // 0 = первая камера
+        capture = VideoCapture(currentCamera)
 
         if (!capture!!.isOpened) {
             running = false
@@ -122,25 +128,46 @@ class JvmPictureManager : PictureManager {
         return bitmap?.toComposeImageBitmap()
     }
 
-    override fun getCamerasList(): List<Camera> {
-        var index = 0
-        val camerasList = mutableListOf<Camera>()
-        while (index < 10) {
-            val currentCapture = VideoCapture(index)
-            if (currentCapture.isOpened) {
-                currentCapture.release()
+    override fun getCamerasList(): List<String> {
+        val cameras = MutableList(getNumberOfCamerasFromOpenCv()) { "Unknown camera" }
+        val cmd =
+            "powershell -Command \"Get-PnpDevice -Class Image | Where-Object Status -eq 'OK' | Select-Object -ExpandProperty FriendlyName\""
+
+        try {
+            val process = Runtime.getRuntime().exec(cmd)
+
+            // Ждем завершения процесса
+            process.waitFor(5, TimeUnit.SECONDS)
+
+            // Читаем UTF-8 вывод
+            process.inputStream.bufferedReader(StandardCharsets.UTF_8).use { reader ->
+                reader.lineSequence()
+                    .filter { it.trim().isNotBlank() }
+                    .forEachIndexed { index, name ->
+                        if (index < cameras.size) cameras[index] = name.trim()
+                    }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        cameraNames = cameras
+        return cameras
+    }
+
+    fun getCameraName(index: Int?) =
+        if (index != null && index < cameraNames.size) cameraNames[index] else ""
+
+    private fun getNumberOfCamerasFromOpenCv(max: Int = 10): Int {
+        var count = 0
+        for (i in 0 until max) {
+            val camera = VideoCapture(i)
+            if (camera.isOpened) {
+                count++
+                camera.release()
+            } else {
                 break
             }
-            camerasList.add(
-                Camera(
-                    width = currentCapture.get(Videoio.CAP_PROP_FRAME_WIDTH).toInt(),
-                    height = currentCapture.get(Videoio.CAP_PROP_FRAME_HEIGHT).toInt(),
-                    fps = currentCapture.get(Videoio.CAP_PROP_FPS).toInt(),
-                )
-            )
-            currentCapture.release()
-            index++
         }
-        return camerasList
+        return count
     }
 }

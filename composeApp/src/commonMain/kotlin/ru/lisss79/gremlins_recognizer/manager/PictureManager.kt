@@ -5,11 +5,5 @@ import androidx.compose.ui.graphics.ImageBitmap
 interface PictureManager {
     suspend fun selectImage(): ImageBitmap?
     suspend fun takePicture(): ImageBitmap?
-    fun getCamerasList(): List<Camera>
+    fun getCamerasList(): List<String>
 }
-
-data class Camera(
-    val width: Int,
-    val height: Int,
-    val fps: Int
-)

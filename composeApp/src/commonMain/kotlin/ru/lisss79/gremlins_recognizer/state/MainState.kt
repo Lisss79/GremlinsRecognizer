@@ -6,7 +6,9 @@ data class MainState(
     val image: ImageBitmap? = null,
     val info: String = "",
     val currentScreen: MainScreen = MainScreen.MAIN_SCREEN,
-    val platform: Platform = Platform.NONE
+    val platform: Platform = Platform.NONE,
+    val currentCamera: Int = 0,
+    val numberOfCameras: Int? = null
 )
 
 enum class MainScreen {
