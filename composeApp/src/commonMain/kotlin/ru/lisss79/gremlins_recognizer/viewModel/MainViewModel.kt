@@ -12,10 +12,11 @@ import org.jetbrains.compose.resources.getString
 import ru.lisss79.gremlins_recognizer.state.MainScreen
 import ru.lisss79.gremlins_recognizer.state.MainState
 import ru.lisss79.gremlins_recognizer.state.Platform
+import java.util.Locale
 
 expect val platform: Platform
 
-class MainViewModel: ViewModel() {
+class MainViewModel : ViewModel() {
 
     private val _state = MutableStateFlow(MainState())
     val state = _state.asStateFlow()
@@ -40,7 +41,14 @@ class MainViewModel: ViewModel() {
     }
 
     fun setResult(result: List<Pair<String, Float>>) {
-        val text = result.firstOrNull()?.first ?: "Can't get info"
+        val text = if (result.isEmpty()) "Can't get info"
+        else result
+            .filter { it.second > 0.5f }
+            .joinToString("\n") { (label, prob) ->
+                val probText = String.format(Locale.getDefault(), "%.2f", prob)
+                "$label, probability: $probText"
+            }
+            .ifEmpty { "Can't recognize the object" }
         _state.value = _state.value.copy(info = text)
     }
 

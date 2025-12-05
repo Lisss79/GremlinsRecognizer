@@ -70,8 +70,9 @@ android {
         }
     }
     buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
         }
     }
     compileOptions {
@@ -101,6 +102,14 @@ compose.desktop {
                 dirChooser = true
                 menuGroup = "GremlinsRecognizer"
                 upgradeUuid = "275f1afe-b901-46f1-9462-4c8ed19361b9"
+            }
+        }
+        buildTypes {
+            release {
+                proguard {
+                    optimize.set(true)
+                    configurationFiles.from(project.file("compose-desktop.pro"))
+                }
             }
         }
     }

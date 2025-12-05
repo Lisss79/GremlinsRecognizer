@@ -22,10 +22,10 @@ class ImageClassifierImpl : ImageClassifier {
     init {
         CoroutineScope(Dispatchers.IO).launch {
             // Загружаем ONNX модель из ресурсов
-            val modelBytes = Res.readBytes("files/my_model.onnx")
+            val modelBytes = Res.readBytes("files/gremlins_model.onnx")
             session = env.createSession(modelBytes)
             inputName = session.inputNames.first()
-            labels = loadLabels("files/image_labels.txt")
+            labels = loadLabels("files/gremlins_labels.txt")
         }
     }
 
@@ -52,7 +52,7 @@ class ImageClassifierImpl : ImageClassifier {
 
     private suspend fun loadLabels(path: String): List<String> {
         val lines = Res.readBytes(path).toString(Charsets.UTF_8).lines()
-        return lines.drop(1).take(1000)
+        return lines.take(5)
     }
 
 }
